@@ -22,10 +22,12 @@
             <div class="card-body">
                 <h5 class="card-title">Item Information</h5>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>ID:</strong> {{ $item->id }}</li>
-                    <li class="list-group-item"><strong>Nama:</strong> {{ $item->nama }}</li>
-                    <li class="list-group-item"><strong>Harga:</strong> Rp. {{ number_format($item->harga, 2, ".", ",") }}</li>
-                    <li class="list-group-item"><strong>Stok:</strong> {{ $item->stok }}</li>
+                    <li class="list-group-item"><strong>ID :</strong> {{ $item->id }}</li>
+                    <li class="list-group-item"><strong>Nama :</strong> {{ $item->nama }}</li>
+                    <li class="list-group-item"><strong>Harga :</strong> Rp. {{ number_format($item->harga, 2, ".", ",") }}</li>
+                    <li class="list-group-item"><strong>Stok :</strong> {{ $item->stok }}</li>
+                    <li class="list-group-item"><strong>Created at :</strong> {{ $item->created_at }}</li>
+                    <li class="list-group-item"><strong>Updated at :</strong> {{ $item->updated_at }}</li>
                 </ul>
             </div>
         </div>
