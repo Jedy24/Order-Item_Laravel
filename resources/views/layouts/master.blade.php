@@ -13,7 +13,7 @@
     <div class="container">
         <header class="blog-header py-3">
             <div class="col-12 text-center">
-                <a class="blog-header-logo text-dark" href="{{ route('landing') }}">Order Items</a>
+                <a class="blog-header-logo text-dark" href="{{ route('index') }}">Order Items</a>
             </div>
         </header>
 

@@ -19,6 +19,6 @@ use App\Http\Controllers\LandingController;
 //     return view('welcome');
 // });
 
-Route::get('/', LandingController::class)->name('landing');
+Route::get('/', LandingController::class)->name('index');
 
 Route::resource('items', ItemController::class);
