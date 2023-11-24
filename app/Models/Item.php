@@ -18,4 +18,8 @@ class Item extends Model
         'harga',
         'stok'
     ];
+
+    public function orders(){
+        return $this->hasMany(Order::class, 'order_item');
+    }
 }

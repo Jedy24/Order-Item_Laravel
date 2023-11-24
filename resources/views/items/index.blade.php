@@ -32,7 +32,7 @@
                     <tr>
                         <td>{{ $item->id }}</td>
                         <td>{{ $item->nama }}</td>
-                        <td>Rp. {{ number_format($item->harga, 2, ".", ",") }}</td>
+                        <td>Rp. {{ number_format($item->harga, 2, ",", ".") }}</td>
                         <td>{{ $item->stok }}</td>
                         <td>
                             <a href="{{ route('items.show', $item->id) }}" type="button" class="btn btn-sm btn-dark">
