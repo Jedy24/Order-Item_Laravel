@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemController;
-use App\Http\Controllers\LandingController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AppController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,13 @@ use App\Http\Controllers\LandingController;
 //     return view('welcome');
 // });
 
-Route::get('/', LandingController::class)->name('index');
+Route::get('/', [AppController::class, 'index'])->name('index');
 
 Route::resource('items', ItemController::class);
+
+Route::prefix('/order')->group(function(){
+    Route::get('/', [OrderController::class, 'order'])->name('orders.create');
+    Route::post('/', [OrderController::class, 'createOrder'])->name('orders.store');
+    Route::get('/index', [OrderController::class, 'list'])->name('orders.index');
+    Route::get('/{order}', [OrderController::class,'details'])->name('orders.details');
+});
