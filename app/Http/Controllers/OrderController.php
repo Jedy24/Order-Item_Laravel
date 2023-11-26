@@ -17,11 +17,11 @@ class OrderController extends Controller
 
     public function createOrder(Request $request)
     {
-        $inputs = $request->all();
+        // $inputs = $request->all();
 
         /*Mengambil Nama & Quantity dari input request*/
-        $ids = $request->get('.nama');
-        $quantities = $request->get('.quantity');
+        // $ids = $request->get('.nama');
+        // $quantities = $request->get('.quantity');
 
         /*Validasi jumlah stok*/
         // foreach ($ids as $key => $id) {
@@ -36,9 +36,9 @@ class OrderController extends Controller
         /*Membuat Order ke DB*/
         // DB::beginTransaction();
 
-        $order = new Order;
-        $order->status = $request->get('status');
-        $order->save();
+        // $order = new Order;
+        // $order->status = $request->get('status');
+        // $order->save();
 
         /*Error duplicate primary key karena input 2 item yang sama berdasarkan ID.
           Data tidak tersimpan di table order_item.*/
@@ -55,6 +55,17 @@ class OrderController extends Controller
         // }
 
         // DB::commit();
+
+        $order = Order::create($request->all());
+
+        $items = $request->input('items', []);
+        $quantities = $request->input('quantities', []);
+
+        for ($item = 0; $item < count($items); $item++) {
+            if ($items[$item] != '') {
+                $order->items()->attach($items[$item], ['quantity' => $quantities[$item]]);
+            }
+        }
 
         return redirect()->route('index')->with('success', 'Order has been created successfully');
     }
