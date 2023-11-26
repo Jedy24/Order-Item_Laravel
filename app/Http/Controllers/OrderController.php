@@ -19,7 +19,7 @@ class OrderController extends Controller
     {
         $inputs = $request->all();
 
-        /*Mengambil ID & Quantity dari input request*/
+        /*Mengambil Nama & Quantity dari input request*/
         $ids = $request->get('.nama');
         $quantities = $request->get('.quantity');
 
