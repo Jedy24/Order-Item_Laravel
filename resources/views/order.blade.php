@@ -9,6 +9,22 @@
         <h1>Add New Order</h1>
     </div>
 
+    @if (session()->has('success'))
+        <div class="alert alert-success mt-4">
+            {{ session()->get('success') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger mt-4">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="row my-4">
         <div class="col-12 px-5">
             <form action="{{ route('orders.store') }}" method="POST" enctype="multipart/form-data">
@@ -26,7 +42,7 @@
                 <div class="col-md-12 mb-3">
                     {{--Menampilkan data item yang jumlah stoknya > 0--}}
                     <div class="mb-3 col-md-12 col-sm-12">
-                        <label for="title" class="form-label font-weight-bold fs-4" id="table">Item List</label>
+                        <label for="title" class="form-label font-weight-bold fs-4" id="table-item">Item List</label>
                         <table class="table table-bordered mb-3">
                             <thead>
                                 <tr class="table-success">
@@ -42,7 +58,7 @@
                                     <tr>
                                         <td>{{ $item->id }}</td>
                                         <td>{{ $item->nama }}</td>
-                                        <td>Rp. {{ number_format($item->harga, 2, ",", ".") }}</td>
+                                        <td>{{ $item->harga }}</td>
                                         <td>{{ $item->stok }}</td>
                                     </tr>
                                 @empty
@@ -85,7 +101,7 @@
                         </div>
                     </div>
 
-                    <div class="kelas invisible" style="display: none">
+                    <div class="kelas invisible">
                         <div class="control-group">
                             <div class="row">
                                 <div class="col-md-6 col-sm-8">
@@ -118,14 +134,14 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Submit Order</button>
+                <button type="submit" class="btn btn-primary btn-block mt-3">Submit Order</button>
             </form>
         </div>
     </div>
 @endsection
 
 {{--Pop up notif jika stok tidak mencukupi--}}
-<div class="modal fade" id="stok" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="stokInfo" aria-hidden="true">
+<div class="modal fade" id="inv-stok" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="stokInfo" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -162,6 +178,10 @@
         return a.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
+    // function format_rupiah(a){
+    //     return a.toString()replaceAll(',', '.');
+    // }
+
     //Fungsi pembulatan
     const round = (number, decimal) => {
         const rounded = Math.pow(10, decimal);
@@ -170,47 +190,62 @@
 
     //Menghitung Pajak asumsi pajak adalah 11%
     function ppn(harga) {
-        return round(harga * 11 / 100, 2);
+        return round(harga * 0.11, 2);
     }
 
     //Menghitung total harga setelah pajak
     function total(harga, pajak) {
-        return round(number(harga) + number(pajak), 2);
+        return round(Number(harga) + Number(pajak), 2);
     }
 
-
     function sumTotal() {
-        let table = document.getElementById("table");
-        let rows = table.rows;
-        let fieldNama = document.getElementsByClassName('nama');
-        let fieldQty = document.getElementsByClassName('quantity');
+        //Mengambil tabel dengan id table-item
+        const table = document.getElementById("table-item");
+        const rows = table.rows;
 
-        let quantities = Array.from(fieldQty).map(g => Number(g.value));
+        //Mengambil HTML elements nama
+        const fieldNama = document.getElementsByClassName('nama');
+        const namaCount = fieldNama.length
 
+        //Mengambil HTML elements quantity dan inputnya
+        const qty = Array.from(document.getElementsByClassName('quantity'), input => Number(input.value));
+
+        //Inisialisasi total harga
         let totalHarga = 0;
 
-        for (let j = 0; j < fieldNama.length; j++) {
+        for (const nama of fieldNama) {
             for (let i = 1; i < rows.length; i++) {
-                let x = rows[i].getElementsByTagName("TD")[0];
-                let y = rows[i].getElementsByTagName("TD")[3];
+                const row = rows[i];
 
-                if (x.innerHTML == fieldNama[j].value) {
-                    let stok = Number(y.innerHTML) - quantities[j];
+                //Mengambil kolom tabel dalam bentuk array
+                const col = row.getElementsByTagName("TD")[0];
 
-                    if (stok < 0) {
-                        modalStok.modal('show');
-                        console.log(fieldQty[j].value);
-                    } else {
-                        let hargaPerItem = Number(rows[i].getElementsByTagName("TD")[2].innerHTML);
-                        totalHarga += hargaPerItem * quantities[j];
+                //Mengambil quantity sesuai dengan nama
+                const quantity = qty[fieldNama.indexOf(nama)];
+
+                if (col.innerHTML == nama.value) {
+                    if (stokUpdated < 0) {
+                    // Debug statement
+                    console.log('Negative stock:', stokUpdated);
+                    $('#inv-stok').modal('show');
+                    console.log(quantity);
+                } else {
+                    // Debug statement
+                    console.log('Adding to totalHarga:', totalHarga);
+                    totalHarga += Number(rows.getElementsByTagName("TD")[2].innerHTML) * quantity;
+                    // Debug statement
+                    console.log('After addition to totalHarga:', totalHarga);
                     }
                 }
             }
         }
 
-        let totalAkhir = total(totalHarga, ppn(totalHarga));
-            document.getElementById('totalHarga').innerHTML = format_angka(totalAkhir.toFixed(2));
-}
+        // Debug statement
+        console.log('Final totalHarga:', totalHarga);
+
+        document.getElementById('totalHarga').innerHTML = format_angka(total(totalHarga, ppn(totalHarga)).toFixed(2));
+        // document.getElementById('totalHarga').innerHTML = format_angka(format_rupiah((totalHarga, ppn(totalHarga))).toFixed(2));
+    }
 </script>
 
 
@@ -251,3 +286,24 @@
         });
     </script>
 @endif --}}
+
+{{-- for (let j = 0; j < fieldNama.length; j++) {
+    for (let i = 1; i < rows.length; i++) {
+        let x = rows[i].getElementsByTagName("TD")[0];
+        let y = rows[i].getElementsByTagName("TD")[3];
+
+        if (x.innerHTML == fieldNama[j].value) {
+            let stok = Number(y.innerHTML) - quantities[j];
+
+            if (stok < 0) {
+                modalStok.modal('show');
+                console.log(fieldQty[j].value);
+            } else {
+                let hargaPerItem = Number(rows[i].getElementsByTagName("TD")[2].innerHTML);
+                totalHarga += hargaPerItem * quantities[j];
+            }
+        }
+    }
+
+let totalAkhir = total(totalHarga, ppn(totalHarga));
+document.getElementById('totalHarga').innerHTML = format_angka(totalAkhir.toFixed(2)); --}}
