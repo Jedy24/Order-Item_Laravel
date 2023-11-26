@@ -75,7 +75,48 @@
                         </div>
                     </div>
 
-                    <div class="control-group">
+                    <div class="col-md-12 mb-3">
+                        <div class="card-body">
+                            <table class="table" id="tabel_item">
+                                <thead>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                </thead>
+
+                                <tbody>
+                                    <tr id="item0">
+                                        <td>
+                                            <select name="items[]" class="form-control">
+                                                <option value="" disabled selected>Select Item</option>
+                                                @foreach ($items as $item)
+                                                    <option value="{{ $item->id }}">
+                                                        {{ $item->nama }} (Rp. {{ number_format($item->harga, 2) }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+
+                                        <td>
+                                            <input type="number" name="quantities[]" class="form-control" min="1" />
+                                        </td>
+                                    </tr>
+
+                                    <tr id="item1"></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button id="add_row" class="btn btn-dark">Add New Item</button>
+                        </div>
+                        <div class="col-6 text-right">
+                            <button id='delete_row' class="btn btn-danger">Delete Item</button>
+                        </div>
+                    </div>
+
+                    {{-- <div class="control-group">
                         <div class="row">
                             <div class="mb-3 col-md-6 col-sm-8">
                                 <label for="id">Item</label>
@@ -92,16 +133,16 @@
                                 <input type="number" class="form-control" name="quantity[]" id="quantity" value="{{ old('quantity') }}" min="1" oninput="sumTotal()">
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     {{--Class add-more untuk menambah item a.k.a multiple select item--}}
-                    <div class="control-group after-add-more">
+                    {{-- <div class="control-group after-add-more">
                         <div class="d-flex justify-content-center mb-3">
                             <button class="btn btn-dark add-more" type="button">Add more item</button>
                         </div>
-                    </div>
+                    </div> --}}
 
-                    <div class="kelas invisible">
+                    {{-- <div class="kelas invisible">
                         <div class="control-group">
                             <div class="row">
                                 <div class="col-md-6 col-sm-8">
@@ -124,7 +165,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
 
                 <div class="mb-3 col-md-12 col-sm-12">
@@ -134,7 +175,10 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block mt-3">Submit Order</button>
+                <div class="col-12 mb-3 mt-3 text-center">
+                    <button class="btn btn-primary" type="submit">Submit Order</button>
+                </div>
+
             </form>
         </div>
     </div>
@@ -160,16 +204,37 @@
 
 <script type="text/javascript">
     //Function untuk multiple select item
-    $(document).ready(function() {
-        // const modalStok = $('#stok');
+    // $(document).ready(function() {
+    //     // const modalStok = $('#stok');
 
-        $(".add-more").click(function(){
-            var html = $(".kelas").html();
-            $(".after-add-more").after(html)
+    //     $(".add-more").click(function(){
+    //         var html = $(".kelas").html();
+    //         $(".after-add-more").after(html)
+    //     });
+
+    //     $("body").on("click",".remove",function(){
+    //         $(this).parents(".control-group").remove();
+    //     });
+    // });
+
+    //Function untuk menambah item yang dipilih atau multiple select item
+    $(document).ready(function(){
+        let row_number = 1;
+        $("#add_row").click(function(e){
+            e.preventDefault();
+            let new_row_number = row_number - 1;
+            $('#item' + row_number).html($('#item' + new_row_number).html()).find('td:first-child');
+            $('#tabel_item').append('<tr id="item' + (row_number + 1) + '"></tr>');
+            row_number++;
         });
 
-        $("body").on("click",".remove",function(){
-            $(this).parents(".control-group").remove();
+        //Delete 1 row terakhir
+        $("#delete_row").click(function(e){
+            e.preventDefault();
+            if(row_number > 1){
+                $("#item" + (row_number - 1)).html('');
+                row_number--;
+            }
         });
     });
 
