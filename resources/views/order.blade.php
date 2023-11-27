@@ -39,11 +39,11 @@
                     </select>
                 </div>
 
+                {{--Menampilkan data item yang jumlah stoknya > 0--}}
                 <div class="col-md-12 mb-3">
-                    {{--Menampilkan data item yang jumlah stoknya > 0--}}
                     <div class="mb-3 col-md-12 col-sm-12">
-                        <label for="title" class="form-label font-weight-bold fs-4" id="table-item">Item List</label>
-                        <table class="table table-bordered mb-3">
+                        <label for="title" class="form-label font-weight-bold fs-4" id="tabel_data">Item List</label>
+                        <table class="table table-bordered mb-3" id="tabel_data">
                             <thead>
                                 <tr class="table-success">
                                     <th scope="col">ID</th>
@@ -58,7 +58,7 @@
                                     <tr>
                                         <td>{{ $item->id }}</td>
                                         <td>{{ $item->nama }}</td>
-                                        <td>{{ $item->harga }}</td>
+                                        <td>Rp. {{ number_format($item->harga, 2) }}</td>
                                         <td>{{ $item->stok }}</td>
                                     </tr>
                                 @empty
@@ -67,6 +67,7 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
 
                     {{--Label--}}
                     <div class="container text-center mt-4">
@@ -84,12 +85,12 @@
                                 </thead>
 
                                 <tbody>
-                                    <tr id="item0">
+                                    <tr>
                                         <td>
                                             <select name="items[]" class="form-control">
                                                 <option value="" disabled selected>Select Item</option>
                                                 @foreach ($items as $item)
-                                                    <option value="{{ $item->id }}">
+                                                    <option value="{{ $item->id }}" data-harga="{{ $item->harga }}" data-stok="{{ $item->stok }}">
                                                         {{ $item->nama }} (Rp. {{ number_format($item->harga, 2) }})
                                                     </option>
                                                 @endforeach
@@ -100,8 +101,6 @@
                                             <input type="number" name="quantities[]" class="form-control" min="1" />
                                         </td>
                                     </tr>
-
-                                    <tr id="item1"></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -115,70 +114,18 @@
                             <button id='delete_row' class="btn btn-danger">Delete Item</button>
                         </div>
                     </div>
-
-                    {{-- <div class="control-group">
-                        <div class="row">
-                            <div class="mb-3 col-md-6 col-sm-8">
-                                <label for="id">Item</label>
-                                <select class="form-control" name="id[]" id="id" value="{{ old('id') }}" onclick="sumTotal()">
-                                    <option disabled selected>Select Item</option>
-                                    @foreach($items as $item)
-                                        <option value="{{ $item->id }}">{{ $item->nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="mb-3 col-md-6 col-sm-8">
-                                <label for="quantity">Quantity</label>
-                                <input type="number" class="form-control" name="quantity[]" id="quantity" value="{{ old('quantity') }}" min="1" oninput="sumTotal()">
-                            </div>
-                        </div>
-                    </div> --}}
-
-                    {{--Class add-more untuk menambah item a.k.a multiple select item--}}
-                    {{-- <div class="control-group after-add-more">
-                        <div class="d-flex justify-content-center mb-3">
-                            <button class="btn btn-dark add-more" type="button">Add more item</button>
-                        </div>
-                    </div> --}}
-
-                    {{-- <div class="kelas invisible">
-                        <div class="control-group">
-                            <div class="row">
-                                <div class="col-md-6 col-sm-8">
-                                    <label for="id">Item</label>
-                                    <select class="form-control" name="id[]" id="id" value="{{ old('id') }}" onclick="sumTotal()">
-                                        <option disabled selected>Select Item</option>
-                                        @foreach($items as $item)
-                                            <option value="{{ $item->id }}">{{ $item->nama }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6 col-sm-8">
-                                    <label for="quantity">Quantity</label>
-                                    <input type="number" class="form-control" name="quantity[]" id="quantity" value="{{ old('quantity') }}" min="1" oninput="sumTotal()">
-                                </div>
-
-                                <div class="col-12 mb-3 mt-3 text-center">
-                                    <button class="btn btn-danger btn-block remove" type="button" onclick="sumTotal()">Delete</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
                 </div>
 
                 <div class="mb-3 col-md-12 col-sm-12">
                     <div class="d-flex justify-content-between">
-                        <p class="text-muted">Total harga (Inc. PPN)</p>
-                        <h5 id="totalHarga"></h5>
+                        <p class="text-muted mx-5">Total harga (Inc. PPN) :</p>
+                        <h5 id="totalHarga" class="mx-5"></h5>
                     </div>
                 </div>
 
                 <div class="col-12 mb-3 mt-3 text-center">
-                    <button class="btn btn-primary" type="submit">Submit Order</button>
+                    <button class="btn btn-primary" type="submit" id="submit_order">Submit Order</button>
                 </div>
-
             </form>
         </div>
     </div>
@@ -203,114 +150,63 @@
 </div>
 
 <script type="text/javascript">
-    //Function untuk multiple select item
-    // $(document).ready(function() {
-    //     // const modalStok = $('#stok');
-
-    //     $(".add-more").click(function(){
-    //         var html = $(".kelas").html();
-    //         $(".after-add-more").after(html)
-    //     });
-
-    //     $("body").on("click",".remove",function(){
-    //         $(this).parents(".control-group").remove();
-    //     });
-    // });
-
-    //Function untuk menambah item yang dipilih atau multiple select item
-    $(document).ready(function(){
+    /**Function untuk menambah item yang dipilih atau multiple select item*/
+    $(document).ready(function () {
         let row_number = 1;
-        $("#add_row").click(function(e){
+
+        /**Function Menambah baris*/
+        $("#add_row").click(function (e) {
             e.preventDefault();
-            let new_row_number = row_number - 1;
-            $('#item' + row_number).html($('#item' + new_row_number).html()).find('td:first-child');
-            $('#tabel_item').append('<tr id="item' + (row_number + 1) + '"></tr>');
+
+            /**Duplicate baris sebelumnya*/
+            let new_row = $("#tabel_item tbody tr:first").clone();
+
+            /**Reset value item dan quantity*/
+            new_row.find('select[name="items[]"]').val('');
+            new_row.find('input[name="quantities[]"]').val('');
+
+            /**Menambah baris baru*/
+            $('#tabel_item tbody').append(new_row);
+
             row_number++;
         });
 
-        //Delete 1 row terakhir
-        $("#delete_row").click(function(e){
+        /**Function delete baris*/
+        $("#delete_row").click(function (e) {
             e.preventDefault();
-            if(row_number > 1){
-                $("#item" + (row_number - 1)).html('');
+            if (row_number > 1) {
+
+                /**Menghapus baris item terakhir*/
+                $("#tabel_item tbody tr:last").remove();
                 row_number--;
+
+                /**Kalkulasi total harga keseluruhan*/
+                calculateTotal();
             }
         });
-    });
 
-    //Format angka untuk memisahkan ribuan, misal 123456 -> 123.456
-    function format_angka(a){
-        return a.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+        function calculateTotal() {
+            let totalHarga = 0;
 
-    // function format_rupiah(a){
-    //     return a.toString()replaceAll(',', '.');
-    // }
+            /**Looping per baris pada tabel dengan id = tabel_item*/
+            $('#tabel_item tbody tr').each(function () {
+                const quantity = parseFloat($(this).find("input[name='quantities[]']").val()) || 0;
+                const harga = parseFloat($(this).find("select[name='items[]']").find(':selected').data('harga')) || 0;
 
-    //Fungsi pembulatan
-    const round = (number, decimal) => {
-        const rounded = Math.pow(10, decimal);
-        return Math.round(number * rounded) / rounded;
-    }
+                /**Menghitung total harga per item dengan asumsi pajak 11%*/
+                const totalPerItem = harga * quantity * 1.11;
 
-    //Menghitung Pajak asumsi pajak adalah 11%
-    function ppn(harga) {
-        return round(harga * 0.11, 2);
-    }
+                /**Kalkulasi total harga keseluruhan*/
+                totalHarga += totalPerItem;
+            });
 
-    //Menghitung total harga setelah pajak
-    function total(harga, pajak) {
-        return round(Number(harga) + Number(pajak), 2);
-    }
-
-    function sumTotal() {
-        //Mengambil tabel dengan id table-item
-        const table = document.getElementById("table-item");
-        const rows = table.rows;
-
-        //Mengambil HTML elements nama
-        const fieldNama = document.getElementsByClassName('nama');
-        const namaCount = fieldNama.length
-
-        //Mengambil HTML elements quantity dan inputnya
-        const qty = Array.from(document.getElementsByClassName('quantity'), input => Number(input.value));
-
-        //Inisialisasi total harga
-        let totalHarga = 0;
-
-        for (const nama of fieldNama) {
-            for (let i = 1; i < rows.length; i++) {
-                const row = rows[i];
-
-                //Mengambil kolom tabel dalam bentuk array
-                const col = row.getElementsByTagName("TD")[0];
-
-                //Mengambil quantity sesuai dengan nama
-                const quantity = qty[fieldNama.indexOf(nama)];
-
-                if (col.innerHTML == nama.value) {
-                    if (stokUpdated < 0) {
-                    // Debug statement
-                    console.log('Negative stock:', stokUpdated);
-                    $('#inv-stok').modal('show');
-                    console.log(quantity);
-                } else {
-                    // Debug statement
-                    console.log('Adding to totalHarga:', totalHarga);
-                    totalHarga += Number(rows.getElementsByTagName("TD")[2].innerHTML) * quantity;
-                    // Debug statement
-                    console.log('After addition to totalHarga:', totalHarga);
-                    }
-                }
-            }
+            /**Menampilkan total harga keseluruhan*/
+            $("#totalHarga").text("Rp. " + totalHarga.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
         }
 
-        // Debug statement
-        console.log('Final totalHarga:', totalHarga);
-
-        document.getElementById('totalHarga').innerHTML = format_angka(total(totalHarga, ppn(totalHarga)).toFixed(2));
-        // document.getElementById('totalHarga').innerHTML = format_angka(format_rupiah((totalHarga, ppn(totalHarga))).toFixed(2));
-    }
+        /**Function EventListener untuk input pada tabel_item*/
+        $('#tabel_item').on('input', 'input[name="quantities[]"], select[name="items[]"]', calculateTotal);
+    });
 </script>
 
 
@@ -372,3 +268,77 @@
 
 let totalAkhir = total(totalHarga, ppn(totalHarga));
 document.getElementById('totalHarga').innerHTML = format_angka(totalAkhir.toFixed(2)); --}}
+
+{{-- // //Format angka untuk memisahkan ribuan, misal 123456 -> 123.456
+// function format_angka(a){
+//     return a.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+// }
+
+// // function format_rupiah(a){
+// //     return a.toString()replaceAll(',', '.');
+// // }
+
+// //Fungsi pembulatan
+// const round = (number, decimal) => {
+//     const rounded = Math.pow(10, decimal);
+//     return Math.round(number * rounded) / rounded;
+// }
+
+// //Menghitung Pajak asumsi pajak adalah 11%
+// function ppn(harga) {
+//     return round(harga * 0.11, 2);
+// }
+
+// //Menghitung total harga setelah pajak
+// function total(harga, pajak) {
+//     return round(Number(harga) + Number(pajak), 2);
+// }
+
+// function sumTotal() {
+//     //Mengambil tabel dengan id table-item
+//     const table = document.getElementById("table-item");
+//     const rows = table.rows;
+
+//     //Mengambil HTML elements nama
+//     const fieldNama = document.getElementsByClassName('nama');
+//     const namaCount = fieldNama.length
+
+//     //Mengambil HTML elements quantity dan inputnya
+//     const qty = Array.from(document.getElementsByClassName('quantity'), input => Number(input.value));
+
+//     //Inisialisasi total harga
+//     let totalHarga = 0;
+
+//     for (const nama of fieldNama) {
+//         for (let i = 1; i < rows.length; i++) {
+//             const row = rows[i];
+
+//             //Mengambil kolom tabel dalam bentuk array
+//             const col = row.getElementsByTagName("TD")[0];
+
+//             //Mengambil quantity sesuai dengan nama
+//             const quantity = qty[fieldNama.indexOf(nama)];
+
+//             if (col.innerHTML == nama.value) {
+//                 if (stokUpdated < 0) {
+//                 // Debug statement
+//                 console.log('Negative stock:', stokUpdated);
+//                 $('#inv-stok').modal('show');
+//                 console.log(quantity);
+//             } else {
+//                 // Debug statement
+//                 console.log('Adding to totalHarga:', totalHarga);
+//                 totalHarga += Number(rows.getElementsByTagName("TD")[2].innerHTML) * quantity;
+//                 // Debug statement
+//                 console.log('After addition to totalHarga:', totalHarga);
+//                 }
+//             }
+//         }
+//     }
+
+//     // Debug statement
+//     console.log('Final totalHarga:', totalHarga);
+
+//     document.getElementById('totalHarga').innerHTML = format_angka(total(totalHarga, ppn(totalHarga)).toFixed(2));
+//     // document.getElementById('totalHarga').innerHTML = format_angka(format_rupiah((totalHarga, ppn(totalHarga))).toFixed(2));
+// } --}}
