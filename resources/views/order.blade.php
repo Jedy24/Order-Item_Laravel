@@ -15,15 +15,12 @@
         </div>
     @endif
 
-    @if ($errors->any())
+    @if (session()->has('error'))
         <div class="alert alert-danger mt-4">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+            {{ session()->get('error') }}
         </div>
     @endif
+
 
     <div class="row my-4">
         <div class="col-12 px-5">
@@ -153,6 +150,7 @@
     /**Function untuk menambah item yang dipilih atau multiple select item*/
     $(document).ready(function () {
         let row_number = 1;
+        let disabledOptions = {};
 
         /**Function Menambah baris*/
         $("#add_row").click(function (e) {
@@ -169,6 +167,8 @@
             $('#tabel_item tbody').append(new_row);
 
             row_number++;
+
+            disableOptions();
         });
 
         /**Function delete baris*/
@@ -182,6 +182,8 @@
 
                 /**Kalkulasi total harga keseluruhan*/
                 calculateTotal();
+
+                disableOptions();
             }
         });
 
@@ -206,139 +208,35 @@
 
         /**Function EventListener untuk input pada tabel_item*/
         $('#tabel_item').on('input', 'input[name="quantities[]"], select[name="items[]"]', calculateTotal);
+
+        /**Function disableOptions berfungsi untuk disable item yang telah dipilih sebelumnya.
+         * Function tersebut bertujuan agar tidak terjadi duplikasi ID item saat menyimpan data order.
+         * Terjadi conflict dengan perubahan stok saat order, item yang disabled menjadi tidak bisa berkurang stoknya.
+         * disbleOptions sendiri terjadi error dimana hanya bisa disable item terakhir yang dipilih.
+        */
+
+        /**Function untuk disable item yang telah dipilih sebelumnya*/
+        // function disableOptions() {
+        //     /**Mengambil data item yang telah dipilih*/
+        //     let selectedItems = [];
+
+        //     $('#tabel_item select[name="items[]"]').each(function () {
+        //         let selectedValue = $(this).val();
+        //         if (selectedValue) {
+        //             selectedItems.push(selectedValue);
+        //         }
+        //     });
+
+        //     /**Disable item yang telah dipilih*/
+        //     $('#tabel_item select[name="items[]"]').each(function () {
+        //         let currentDropdown = $(this);
+
+        //         currentDropdown.find('option').prop('disabled', false);
+
+        //         selectedItems.forEach(function (value) {
+        //             currentDropdown.find('option[value="' + value + '"]').prop('disabled', true);
+        //         });
+        //     });
+        // }
     });
 </script>
-
-
-{{-- <div class="row">
-    <div class="col-md-12">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Items</th>
-                    <th>Quantity</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($items as $item)
-                    <tr>
-                        <td>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" name="id[]" value="{{ $item->id }}" id="item_{{ $item->id }}">
-                                <label class="form-check-label" for="item_{{ $item->id }}">{{ $item->nama }}</label>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="mb-2">
-                                <input type="number" class="form-control" name="quantity[]" id="quantity_{{ $item->id }}" value="{{ old('quantity') }}" min="1" oninput="viewTotal()">
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div> --}}
-
-{{-- @if(session('error'))
-    <script>
-        $(document).ready(function() {
-            $('#no-stok').modal('show');
-        });
-    </script>
-@endif --}}
-
-{{-- for (let j = 0; j < fieldNama.length; j++) {
-    for (let i = 1; i < rows.length; i++) {
-        let x = rows[i].getElementsByTagName("TD")[0];
-        let y = rows[i].getElementsByTagName("TD")[3];
-
-        if (x.innerHTML == fieldNama[j].value) {
-            let stok = Number(y.innerHTML) - quantities[j];
-
-            if (stok < 0) {
-                modalStok.modal('show');
-                console.log(fieldQty[j].value);
-            } else {
-                let hargaPerItem = Number(rows[i].getElementsByTagName("TD")[2].innerHTML);
-                totalHarga += hargaPerItem * quantities[j];
-            }
-        }
-    }
-
-let totalAkhir = total(totalHarga, ppn(totalHarga));
-document.getElementById('totalHarga').innerHTML = format_angka(totalAkhir.toFixed(2)); --}}
-
-{{-- // //Format angka untuk memisahkan ribuan, misal 123456 -> 123.456
-// function format_angka(a){
-//     return a.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-// }
-
-// // function format_rupiah(a){
-// //     return a.toString()replaceAll(',', '.');
-// // }
-
-// //Fungsi pembulatan
-// const round = (number, decimal) => {
-//     const rounded = Math.pow(10, decimal);
-//     return Math.round(number * rounded) / rounded;
-// }
-
-// //Menghitung Pajak asumsi pajak adalah 11%
-// function ppn(harga) {
-//     return round(harga * 0.11, 2);
-// }
-
-// //Menghitung total harga setelah pajak
-// function total(harga, pajak) {
-//     return round(Number(harga) + Number(pajak), 2);
-// }
-
-// function sumTotal() {
-//     //Mengambil tabel dengan id table-item
-//     const table = document.getElementById("table-item");
-//     const rows = table.rows;
-
-//     //Mengambil HTML elements nama
-//     const fieldNama = document.getElementsByClassName('nama');
-//     const namaCount = fieldNama.length
-
-//     //Mengambil HTML elements quantity dan inputnya
-//     const qty = Array.from(document.getElementsByClassName('quantity'), input => Number(input.value));
-
-//     //Inisialisasi total harga
-//     let totalHarga = 0;
-
-//     for (const nama of fieldNama) {
-//         for (let i = 1; i < rows.length; i++) {
-//             const row = rows[i];
-
-//             //Mengambil kolom tabel dalam bentuk array
-//             const col = row.getElementsByTagName("TD")[0];
-
-//             //Mengambil quantity sesuai dengan nama
-//             const quantity = qty[fieldNama.indexOf(nama)];
-
-//             if (col.innerHTML == nama.value) {
-//                 if (stokUpdated < 0) {
-//                 // Debug statement
-//                 console.log('Negative stock:', stokUpdated);
-//                 $('#inv-stok').modal('show');
-//                 console.log(quantity);
-//             } else {
-//                 // Debug statement
-//                 console.log('Adding to totalHarga:', totalHarga);
-//                 totalHarga += Number(rows.getElementsByTagName("TD")[2].innerHTML) * quantity;
-//                 // Debug statement
-//                 console.log('After addition to totalHarga:', totalHarga);
-//                 }
-//             }
-//         }
-//     }
-
-//     // Debug statement
-//     console.log('Final totalHarga:', totalHarga);
-
-//     document.getElementById('totalHarga').innerHTML = format_angka(total(totalHarga, ppn(totalHarga)).toFixed(2));
-//     // document.getElementById('totalHarga').innerHTML = format_angka(format_rupiah((totalHarga, ppn(totalHarga))).toFixed(2));
-// } --}}
