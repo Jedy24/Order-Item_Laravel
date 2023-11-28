@@ -10,63 +10,38 @@ use Illuminate\Support\Facades\DB;
 class OrderController extends Controller
 {
     public function order(){
-        /*Mengambil item yang stoknya > 0*/
+        /**Mengambil item yang stoknya > 0*/
         $items = Item::where('stok', '>', 0)->get();
         return view('order', compact('items'));
     }
 
     public function createOrder(Request $request)
     {
-        // $inputs = $request->all();
-
-        /*Mengambil Nama & Quantity dari input request*/
-        // $ids = $request->get('.nama');
-        // $quantities = $request->get('.quantity');
-
-        /*Validasi jumlah stok*/
-        // foreach ($ids as $key => $id) {
-        //     $item = Item::find($id);
-
-        //     /*Cek stok item dengan permintaan*/
-        //     if (!$item || $item->stok < $quantities[$key]) {
-        //         return redirect()->route('order')->with('error', 'Insufficient Stok');
-        //     }
-        // }
-
-        /*Membuat Order ke DB*/
-        // DB::beginTransaction();
-
-        // $order = new Order;
-        // $order->status = $request->get('status');
-        // $order->save();
-
-        /*Error duplicate primary key karena input 2 item yang sama berdasarkan ID.
-          Data tidak tersimpan di table order_item.*/
-
-        /*Menyimpan detil order di table order_item*/
-        // foreach ($ids as $key => $id) {
-        //     $quantity = isset($quantities[$key]) ? $quantities[$key] : null;
-
-        //     DB::table('order_item')->insert([
-        //         'order_id' => $order->id,
-        //         'item_id' => $id,
-        //         'quantity' => $quantity,
-        //     ]);
-        // }
-
-        // DB::commit();
-
         $order = Order::create($request->all());
 
         $items = $request->input('items', []);
         $quantities = $request->input('quantities', []);
 
-        for ($item = 0; $item < count($items); $item++) {
-            if ($items[$item] != '') {
-                $order->items()->attach($items[$item], ['quantity' => $quantities[$item]]);
+        /**Looping untuk menyimpan data order & perubahan stok */
+        for ($i = 0; $i < count($items); $i++) {
+            if ($items[$i] != '') {
+                $order->items()->attach($items[$i], ['quantity' => $quantities[$i]]);
+
+                /**Validasi stok item >= quantity */
+                $item = Item::find($items[$i]);
+                $quantity = $quantities[$i];
+
+                if ($item->stok >= $quantity) {
+                    /**Mengurangi stok apabila validasi terpenuhi */
+                    $item->stok -= $quantity;
+
+                    /**Menyimpan perubahan stok */
+                    $item->save();
+                } else {
+                    return redirect()->back()->with('error', 'Insufficient stock for item ' . $item->nama);
+                }
             }
         }
-
         return redirect()->route('index')->with('success', 'Order has been created successfully');
     }
 
