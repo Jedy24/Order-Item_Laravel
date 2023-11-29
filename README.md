@@ -16,4 +16,4 @@ Routing dalam project ini dapat dijelaskan sebagai berikut :
 - http://127.0.0.1:8000/orders/list : halaman yang menampilkan order.
 - http://127.0.0.1:8000/orders/list/detail/{id} : halaman yang menampilkan detail dari order berdasarkan order_id.
 
-By : Jevon Ivander Juandy
+By : Jevon Ivander Juandy | NPM : 2021130021
