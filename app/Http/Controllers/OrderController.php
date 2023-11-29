@@ -47,21 +47,24 @@ class OrderController extends Controller
 
     public function list(){
         /*Menampilkan seluruh daftar order*/
-        $orders = Order::all();
-        return view('list', compact('orders'));
+        $orders = Order::paginate(10);
+        return view('orders.list', compact('orders'));
     }
 
     public function detail(Order $order)
     {
+        /**Query untuk mengambil data item dan order dari order_item*/
         $details = Order::join('order_item', 'orders.id', '=', 'order_item.order_id')
             ->join('items', 'order_item.item_id', '=', 'items.id')
+            ->where('orders.id', $order->id)
             ->get(['order_item.item_id', 'order_item.quantity', 'items.nama', 'items.harga']);
 
+        /**Function untuk menghitung total harga */
         $total = 0;
         foreach ($details as $detail) {
             $total += $detail->quantity * $detail->harga;
         }
 
-        return view('details', compact('order', 'details', 'total'));
+        return view('orders.detail', compact('order', 'details', 'total'));
     }
 }
