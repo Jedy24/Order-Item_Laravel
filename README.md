@@ -2,10 +2,10 @@
 
 ## About Project
 
-Project untuk Ujian Akhir Semester mata kuliah Pemrograman Berbasis Web Lanjut.
+Project untuk Ujian Akhir Semester mata kuliah Pemrograman Berbasis Web Lanjut. <br>
 Secara garis besar project ini adalah sebuah simulasi untuk melakukan order item dan menampilkan laporannya.
 
-Project dijalankan secara localhost http://127.0.0.1:8000/ dengan menjalankan **npm run dev** dan **php artisan serve** terlebih dahulu. Nama database adalah uas-b-2021130021.
+Project dijalankan secara localhost http://127.0.0.1:8000/ dengan menjalankan **npm run dev** dan **php artisan serve** terlebih dahulu. <br>
 Routing dalam project ini dapat dijelaskan sebagai berikut :
 
 - http://127.0.0.1:8000/ : halaman index yang menampilkan jumlah item dan jumlah order.
