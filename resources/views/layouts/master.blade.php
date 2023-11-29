@@ -32,9 +32,7 @@
 
     <footer class="blog-footer">
         <p>
-            Copyright © {{ date('Y') }} | <a href="/">UAS - 2021130021</a>
-        </p>
-            <a href="#">Back to top</a>
+            Copyright © {{ date('Y') }} | Jevon Ivander Juandy
         </p>
     </footer>
 </body>
