@@ -7,6 +7,12 @@
         <h1>Order Details</h1>
     </div>
 
+    @if (session()->has('success'))
+        <div class="alert alert-success mt-4">
+            {{ session()->get('success') }}
+        </div>
+    @endif
+
     <div class="d-flex justify-content-center mt-3">
         <div class="card border-0 mx-3" style="width: 33rem; box-shadow: 0 8px 16px rgba(82, 149, 236, 0.7);">
             <div class="card-body">
@@ -20,7 +26,7 @@
             <div class="card-body">
                 <p class="card-title fw-bold display-6">Order count</p>
                 <h3 class="card-text">{{ $countOrder }}</h3>
-                <a href="{{ route('orders.index') }}" class="btn btn-primary mt-3">View All Orders</a>
+                <a href="{{ route('orders.list') }}" class="btn btn-primary mt-3">View All Orders</a>
             </div>
         </div>
     </div>
