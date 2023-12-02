@@ -59,52 +59,52 @@
                     </div>
                 </div>
 
-                    {{--Label--}}
-                    <div class="container text-center mt-4">
-                        <div class="mb-3 col-md-12 col-sm-12 mx-auto">
-                            <label for="title" class="form-label font-weight-bold fs-4">Choose Items</label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-12 mb-3">
-                        <div class="card-body">
-                            <table class="table" id="tabel_item">
-                                <thead>
-                                    <th>Item</th>
-                                    <th>Quantity</th>
-                                </thead>
-
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <select name="items[]" class="form-control">
-                                                <option value="" disabled selected>Select Item</option>
-                                                @foreach ($items as $item)
-                                                    <option value="{{ $item->id }}" data-harga="{{ $item->harga }}" data-stok="{{ $item->stok }}">
-                                                        {{ $item->nama }} (Rp. {{ number_format($item->harga, 2) }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-
-                                        <td>
-                                            <input type="number" name="quantities[]" class="form-control" min="1" />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <button id="add_row" class="btn btn-dark">Add New Item</button>
-                        </div>
-                        <div class="col-6 text-right">
-                            <button id='delete_row' class="btn btn-danger">Delete Item</button>
-                        </div>
+                {{--Label--}}
+                <div class="container text-center mt-4">
+                    <div class="mb-3 col-md-12 col-sm-12 mx-auto">
+                        <label for="title" class="form-label font-weight-bold fs-4">Choose Items</label>
                     </div>
                 </div>
+
+                <div class="col-md-12 mb-3">
+                    <div class="card-body">
+                        <table class="table" id="tabel_item">
+                            <thead>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <select name="items[]" class="form-control">
+                                            <option value="" disabled selected>Select Item</option>
+                                            @foreach ($items as $item)
+                                                <option value="{{ $item->id }}" data-harga="{{ $item->harga }}" data-stok="{{ $item->stok }}">
+                                                    {{ $item->nama }} (Rp. {{ number_format($item->harga, 2) }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <input type="number" name="quantities[]" class="form-control" min="1" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id="add_row" class="btn btn-dark">Add New Item</button>
+                    </div>
+                    <div class="col-6 text-right">
+                        <button id='delete_row' class="btn btn-danger">Delete Item</button>
+                    </div>
+                </div>
+        </div>
 
                 <div class="mb-3 col-md-12 col-sm-12">
                     <div class="d-flex justify-content-between">
@@ -120,24 +120,6 @@
         </div>
     </div>
 @endsection
-
-{{--Pop up notif jika stok tidak mencukupi--}}
-<div class="modal fade" id="inv-stok" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="stokInfo" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-danger" id="stokInfo">Info</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Insufficient Stok
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script type="text/javascript">
     /**Function untuk menambah item yang dipilih atau multiple select item*/
@@ -161,7 +143,7 @@
 
             row_number++;
 
-            disableOptions();
+            /**disableOptions();*/
         });
 
         /**Function delete baris*/
@@ -176,7 +158,7 @@
                 /**Kalkulasi total harga keseluruhan*/
                 calculateTotal();
 
-                disableOptions();
+                /**disableOptions();*/
             }
         });
 
