@@ -46,7 +46,7 @@ class OrderController extends Controller
     }
 
     public function list(){
-        /*Menampilkan seluruh daftar order*/
+        /*Menampilkan daftar order*/
         $orders = Order::paginate(10);
         return view('orders.list', compact('orders'));
     }
