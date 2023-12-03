@@ -47,6 +47,10 @@
                                         <td colspan="4" class="text-center">There's no data.</td>
                                     </tr>
                                 @endforelse
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Grand Total:</td>
+                                    <td class="fw-bold">Rp. {{ number_format($total, 2) }}</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
