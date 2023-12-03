@@ -20,15 +20,6 @@
             <form action="{{ route('orders.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                {{--Dropdown menu untuk memilih status--}}
-                <div class="mb-3 col-md-12 col-sm-12">
-                    <label for="title" class="form-label font-weight-bold fs-4">Status</label>
-                    <select class="form-control" name="status" id="status" value="{{ old('status') }}">
-                        <option value="Selesai" selected>Selesai</option>
-                        <option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
-                    </select>
-                </div>
-
                 {{--Menampilkan data item yang jumlah stoknya > 0--}}
                 <div class="col-md-12 mb-3">
                     <div class="mb-3 col-md-12 col-sm-12">
@@ -57,6 +48,15 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                {{--Dropdown menu untuk memilih status--}}
+                <div class="mb-3 col-md-12 col-sm-12">
+                    <label for="title" class="form-label font-weight-bold fs-4">Status</label>
+                    <select class="form-control" name="status" id="status" value="{{ old('status') }}">
+                        <option value="Selesai" selected>Selesai</option>
+                        <option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
+                    </select>
                 </div>
 
                 {{--Label--}}
