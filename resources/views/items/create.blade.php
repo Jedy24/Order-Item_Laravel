@@ -23,34 +23,22 @@
                 @csrf
                 <div class="mb-3 col-md-12 col-sm-12">
                     <label for="title" class="form-label">ID</label>
-                    <input type="text" class="form-control @error('id') invalid @enderror" name="id" id="id" value="{{ $var_id }}" readonly>
-                    @error('id')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                    <input type="text" class="form-control" name="id" id="id" value="{{ $var_id }}" readonly>
                 </div>
 
                 <div class="mb-3 col-md-12 col-sm-12">
                     <label for="title" class="form-label">Nama</label>
-                    <input type="text" class="form-control  @error('nama') invalid @enderror" name="nama" id="nama" value="{{ old('nama') }}">
-                    @error('nama')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                    <input type="text" class="form-control" name="nama" id="nama" value="{{ old('nama') }}">
                 </div>
 
                 <div class="mb-3 col-md-12 col-sm-12">
                     <label for="title" class="form-label">Harga</label>
-                    <input type="number" class="form-control  @error('harga') invalid @enderror" name="harga" id="harga" min="0" value="{{ old('harga') }}">
-                    @error('harga')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                    <input type="number" class="form-control" name="harga" id="harga" min="0" value="{{ old('harga') }}">
                 </div>
 
                 <div class="mb-3 col-md-12 col-sm-12">
                     <label for="title" class="form-label">Stok</label>
-                    <input type="number" class="form-control  @error('stok') invalid @enderror" name="stok" id="stok" min="0" value="{{ old('stok') }}">
-                    @error('stok')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                    <input type="number" class="form-control" name="stok" id="stok" min="0" value="{{ old('stok') }}">
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block mt-3">Save</button>
