@@ -20,7 +20,7 @@
                     <a class="blog-header-logo text-dark" href="{{ route('index') }}">Order Items</a>
                 </div>
                 <div class="col-2 text-end">
-                    <a class="btn btn-primary shadow" href="{{ route('orders.create') }}">Orders</a>
+                    <a class="btn btn-primary shadow" href="{{ route('orders.index') }}">Orders</a>
                 </div>
             </div>
         </header>
