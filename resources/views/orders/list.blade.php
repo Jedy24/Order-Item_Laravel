@@ -5,7 +5,7 @@
 @section('content')
     <div class="mt-4 p-5 bg-black text-white rounded">
         <h1>Order List</h1>
-        <a href="{{ route('orders.create') }}" class="btn btn-primary btn-sm">Create New Order</a>
+        <a href="{{ route('orders.index') }}" class="btn btn-primary btn-sm">Create New Order</a>
     </div>
 
     <div class="container mt-5">
