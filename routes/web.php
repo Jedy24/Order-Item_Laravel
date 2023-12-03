@@ -26,8 +26,8 @@ Route::resource('items', ItemController::class);
 
 /**Group routing untuk order dan detail order */
 Route::prefix('/orders')->group(function(){
-    Route::get('/', [OrderController::class, 'order'])->name('orders.create');
-    Route::post('/', [OrderController::class, 'createOrder'])->name('orders.store');
+    Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('/', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/list', [OrderController::class, 'list'])->name('orders.list');
     Route::get('/list/detail/{order}', [OrderController::class,'detail'])->name('orders.detail');
 });
