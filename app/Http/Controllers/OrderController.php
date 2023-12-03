@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    public function order(){
+    public function index(){
         /**Mengambil item yang stoknya > 0*/
         $items = Item::where('stok', '>', 0)->get();
         return view('order', compact('items'));
     }
 
-    public function createOrder(Request $request)
+    public function store(Request $request)
     {
         $order = Order::create($request->all());
 
@@ -62,7 +62,7 @@ class OrderController extends Controller
         /**Function untuk menghitung total harga */
         $total = 0;
         foreach ($details as $detail) {
-            $total += $detail->quantity * $detail->harga;
+            $total += $detail->quantity * $detail->harga * 1.11;
         }
 
         return view('orders.detail', compact('order', 'details', 'total'));
