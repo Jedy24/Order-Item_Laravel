@@ -15,34 +15,46 @@ class OrderController extends Controller
         return view('order', compact('items'));
     }
 
-    public function store(Request $request)
-    {
-        $order = Order::create($request->all());
+    public function store(Request $request){
+        DB::beginTransaction();
 
-        $items = $request->input('items', []);
-        $quantities = $request->input('quantities', []);
+        try {
+            /**Membuat order */
+            $order = Order::create($request->all());
 
-        /**Looping untuk menyimpan data order & perubahan stok */
-        for ($i = 0; $i < count($items); $i++) {
-            if ($items[$i] != '') {
-                $order->items()->attach($items[$i], ['quantity' => $quantities[$i]]);
+            $items = $request->input('items', []);
+            $quantities = $request->input('quantities', []);
 
-                /**Validasi stok item >= quantity */
-                $item = Item::find($items[$i]);
-                $quantity = $quantities[$i];
+            for ($i = 0; $i < count($items); $i++) {
+                if ($items[$i] != '') {
+                    $order->items()->attach($items[$i], ['quantity' => $quantities[$i]]);
 
-                if ($item->stok >= $quantity) {
-                    /**Mengurangi stok apabila validasi terpenuhi */
-                    $item->stok -= $quantity;
+                    /**Validasi stok item >= quantity */
+                    $item = Item::find($items[$i]);
+                    $quantity = $quantities[$i];
 
-                    /**Menyimpan perubahan stok */
-                    $item->save();
-                } else {
-                    return redirect()->back()->with('error', 'Insufficient stock for item ' . $item->nama);
+                    if ($item->stok >= $quantity) {
+                        /**Mengurangi stok jika stok > quantity order */
+                        $item->stok -= $quantity;
+
+                        // Menyimpan perubahan stok
+                        $item->save();
+                    } else {
+                        /**Melakukan rollback dan memunculkan notif */
+                        DB::rollBack();
+                        return redirect()->back()->with('error', 'Insufficient stock for item ' . $item->nama);
+                    }
                 }
             }
+
+            /**Menyimpan order jika validasi terpenuhi */
+            DB::commit();
+            return redirect()->route('index')->with('success', 'Order has been created successfully');
+        } catch (\Exception $e) {
+            /**Rollback jika validasi tidak terpenuhi */
+            DB::rollBack();
+            return redirect()->back()->with('error', 'An error occurred while processing the order');
         }
-        return redirect()->route('index')->with('success', 'Order has been created successfully');
     }
 
     public function list(){
